@@ -1,0 +1,10 @@
+{
+  "auth": {
+    "bookmyshowapp5123bb78": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  }
+}
