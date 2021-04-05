@@ -80,6 +80,14 @@
   justify-content: space-between;
 }
 
+.bms_shows__card_content
+{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 350px;
+}
+
 .bms_shows__card_title
 {
   display: flex;

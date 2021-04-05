@@ -7,6 +7,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import moment from 'moment'
 
 const useStyles = makeStyles({
     root: {
@@ -23,6 +24,9 @@ export default function ShowCard(props) {
     const { data, defaultPosterUrl } = props
 
     console.log('data', data)
+
+    const dateFormatUtc = (dateUTC) => moment.utc(dateUTC).format('MM/DD/YYYY') 
+
     return (
         <Card className={classes.root} className="bms_shows__card">
             <CardActionArea>
@@ -31,7 +35,7 @@ export default function ShowCard(props) {
                     image={data?.movie?.posterUrl || defaultPosterUrl}
                     title={`poster-${data?.movie?.title || 'movie'}`}
                 />
-                <CardContent>
+                <CardContent className="bms_shows__card_content">
                     <Typography gutterBottom variant="h5" component="h2" className="bms_shows__card_title">
                         <span>{data?.movie?.title || 'Título'}</span>
                         <span>{data?.movie?.format || 'Formato'}</span>
@@ -39,10 +43,10 @@ export default function ShowCard(props) {
                     <Typography variant="body2" color="textSecondary" component="p">
                         {data?.movie?.description || 'Sin sinopsis'}
                     </Typography>
-                    <Typography variant="caption">
+                    <Typography variant="caption" style={{ display: 'flex', justifyContent: 'space-between'}}>
                         <span>{data?.city || 'Ciudad'}</span>
-                        <span>{data?.startTime || 'Inicia'}</span>
-                        <span>{data?.price || 'Precio'}</span>
+                        <span>{dateFormatUtc(data?.startTime) || 'Inicia'}</span>
+                        <span>${data?.price || 'Precio'}</span>
                     </Typography>
                 </CardContent>
             </CardActionArea>
