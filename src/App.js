@@ -8,7 +8,20 @@ import { useEffect, useState } from 'react'
 import { bms_getCities, bms_getShows } from './_http_apis/bookmyshowapi'
 import ShowCard from './_components/ShowCard'
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import LockIcon from '@material-ui/icons/Lock';
 import ShoppingModal from './_components/ShoppingModal'
+import { withAuthenticator } from '@aws-amplify/ui-react'
+
+import { Auth } from 'aws-amplify';
+
+async function signOut() {
+  try {
+    await Auth.signOut();
+    window.location.reload()
+  } catch (error) {
+    console.log('error signing out: ', error);
+  }
+}
 
 const StyledBadge = withStyles((theme) => ({
   badge: {
@@ -86,6 +99,11 @@ function App() {
                 <ShoppingCartIcon />
               </StyledBadge>
             </IconButton>
+            <IconButton aria-label="cart" onClick={() => signOut()}>
+              <StyledBadge color="secondary">
+                <LockIcon />
+              </StyledBadge>
+            </IconButton>
           </Paper>
         </Grid>
         <Grid item xs={12} className="bms_shows__container">
@@ -99,11 +117,11 @@ function App() {
 }
 
 // https://pandeysoni.medium.com/how-to-setup-customize-amplify-authentication-ui-using-hooks-36442f5fdc
-export default App
-// export default withAuthenticator(App, {
-//   usernameAttributes: 'email',
-//   signupConfig: {
-//     hiddenDefaults: ['phone_number'],
-//     signUpFields: [{ key: 'name', label: 'Nombre', required: true }]
-//   }
-// });
+// export default App
+export default withAuthenticator(App, {
+  usernameAttributes: 'email',
+  signupConfig: {
+    hiddenDefaults: ['phone_number'],
+    signUpFields: [{ key: 'name', label: 'Nombre', required: true }]
+  }
+});
