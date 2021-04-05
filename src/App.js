@@ -5,7 +5,7 @@ import {
 } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles';
 import { useEffect, useState } from 'react'
-import { BookmyshowApi } from './_http_apis/Bookmyshow.api'
+import { bms_getCities, bms_getShows } from './_http_apis/bookmyshowapi'
 import ShowCard from './_components/ShowCard'
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import ShoppingModal from './_components/ShoppingModal'
@@ -22,7 +22,6 @@ const StyledBadge = withStyles((theme) => ({
 function App() {
 
   //? APIs
-  const bookMyShowAPI = new BookmyshowApi()
   const [logoUrl] = useState('https://bookmyshow-public.s3.amazonaws.com/bookmyshow_logo.jpg')
 
   //* Catalogos
@@ -46,14 +45,13 @@ function App() {
     const fetchAPIs = async () => {
       try {
         const cargarCatalogosResponse = await Promise.all([
-          bookMyShowAPI.getShows(selectedCiudad),
-          bookMyShowAPI.getCities()
+          bms_getShows(selectedCiudad),
+          bms_getCities()
         ])
 
         const [showsResponse, citiesResponse] = cargarCatalogosResponse
         setCatalogoShows(showsResponse.shows)
         setCatalogoCiudades(citiesResponse.cities)
-        console.log(cargarCatalogosResponse)
       }
       catch (e) {
         console.log('fetchAPIs | error', e)
@@ -66,7 +64,7 @@ function App() {
   return (
     <>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
-      <ShoppingModal open={mostrarModal} setMostrarModal={setMostrarModal} />
+      <ShoppingModal open={mostrarModal} setMostrarModal={setMostrarModal} listaReservaciones={listaReservaciones} />
       <Container>
         <Grid item xs={12}>
           <Paper elevation={3} className="bms_search">

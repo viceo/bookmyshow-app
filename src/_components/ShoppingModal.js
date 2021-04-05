@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
+import { bms_getShowById } from '../_http_apis/bookmyshowapi'
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -27,11 +28,30 @@ function getModalStyle() {
 export default function ShoppingModal(props) {
     const classes = useStyles();
     const modalStyle = getModalStyle();
-    const { open, setMostrarModal } = props
+    const { open, setMostrarModal, listaReservaciones } = props
+
+    // Reservaciones
+    const [reservaciones, setReservaciones] = useState([])
+
+    useEffect(() => {
+        const fetchReservaciones = async () => {
+            try {
+                const response = await Promise.all(listaReservaciones.map(x => bms_getShowById(x)))
+                console.log('fetchReservaciones', response)
+                setReservaciones(response.map(x => x.show))
+            }
+            catch (e) {
+                console.log('fetchReservaciones | error', e)
+            }
+        }
+        fetchReservaciones()
+    }, [listaReservaciones])
 
     const handleClose = () => {
 
     };
+
+    const getTotal = () => reservaciones.map(x => x.price).reduce((sum, val) => sum += Number(val), 0).toFixed(2)
 
     return (
         <div>
@@ -42,10 +62,23 @@ export default function ShoppingModal(props) {
                 aria-describedby="simple-modal-description"
             >
                 <div style={modalStyle} className={classes.paper}>
-                    <h2 id="simple-modal-title">Text in a modal</h2>
-                    <p id="simple-modal-description">Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
-                    <section>
+                    <h2 id="simple-modal-title">Reservaciones</h2>
+                    <section style={{ display: 'flex', flexDirection: 'column' }}>
+                        {reservaciones.map((x, indx) => (
+                            <div key={indx} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span>{x?.movie?.title || 'Title'} ({x?.movie?.format || 'Formato'})</span>
+                                <span>${x?.price}</span>
+                            </div>
+                        ))}
+                    </section>
+                    <span
+                        style={{ display: 'flex', justifyContent: 'flex-end' }}
+                    >Total: ${getTotal()}</span>
+                    <section style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 25 }}>
                         <button onClick={() => setMostrarModal(false)}>Cerrar</button>
+                        <button
+                            style={{ marginLeft: 10 }}
+                            onClick={() => setMostrarModal(false)}>Reservar</button>
                     </section>
                 </div>
             </Modal>
