@@ -1,11 +1,23 @@
 import './App.css';
 import {
-  Paper, FormControl, InputLabel, Select,
-  MenuItem, Grid, Container, TextField
+  Paper, FormControl, InputLabel, Select, Badge,
+  MenuItem, Grid, Container, TextField, IconButton
 } from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles';
 import { useEffect, useState } from 'react'
 import { BookmyshowApi } from './_http_apis/Bookmyshow.api'
 import ShowCard from './_components/ShowCard'
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import ShoppingModal from './_components/ShoppingModal'
+
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    right: -3,
+    top: 13,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: '0 4px',
+  },
+}))(Badge);
 
 function App() {
 
@@ -19,6 +31,15 @@ function App() {
 
   //* Valores seleccionados
   const [selectedCiudad, setSelectedCiudad] = useState('Monterrey')
+
+  //* Lista reservaciones
+  const [listaReservaciones, setListaReservaciones] = useState([])
+
+  //* Modal
+  const [mostrarModal, setMostrarModal] = useState(false)
+
+  //* Funciones
+  const pushReservacion = (reservacion) => setListaReservaciones([...listaReservaciones, reservacion])
 
   //* Cargar datos iniciales
   useEffect(() => {
@@ -39,12 +60,13 @@ function App() {
       }
     }
     fetchAPIs()
-  }, [ selectedCiudad ])
+  }, [selectedCiudad])
 
 
   return (
     <>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+      <ShoppingModal open={mostrarModal} setMostrarModal={setMostrarModal} />
       <Container>
         <Grid item xs={12}>
           <Paper elevation={3} className="bms_search">
@@ -61,12 +83,17 @@ function App() {
                 }
               </Select>
             </FormControl>
+            <IconButton aria-label="cart" onClick={() => setMostrarModal(true)}>
+              <StyledBadge badgeContent={listaReservaciones.length} color="secondary">
+                <ShoppingCartIcon />
+              </StyledBadge>
+            </IconButton>
           </Paper>
         </Grid>
         <Grid item xs={12} className="bms_shows__container">
-              {
-                catalogoShows.map((x, indx) => <ShowCard data={x} defaultPosterUrl={logoUrl} />)
-              }
+          {
+            catalogoShows.map((x, indx) => <ShowCard data={x} defaultPosterUrl={logoUrl} pushReservacion={pushReservacion} />)
+          }
         </Grid>
       </Container>
     </>

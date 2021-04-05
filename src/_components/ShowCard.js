@@ -21,7 +21,7 @@ const useStyles = makeStyles({
 export default function ShowCard(props) {
     const classes = useStyles();
 
-    const { data, defaultPosterUrl } = props
+    const { data, defaultPosterUrl, pushReservacion } = props
 
     console.log('data', data)
 
@@ -51,7 +51,7 @@ export default function ShowCard(props) {
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Button size="small" color="primary">Reservar</Button>
+                <Button size="small" color="primary" onClick={() => pushReservacion(data.id)}>Agregar a carrito</Button>
             </CardActions>
         </Card>
     );
