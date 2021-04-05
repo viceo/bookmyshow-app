@@ -23,6 +23,16 @@ async function signOut() {
   }
 }
 
+const debounce = (callback, wait) => {
+  let timeoutId = null;
+  return (...args) => {
+    window.clearTimeout(timeoutId);
+    timeoutId = window.setTimeout(() => {
+      callback.apply(null, args);
+    }, wait);
+  };
+}
+
 const StyledBadge = withStyles((theme) => ({
   badge: {
     right: -3,
@@ -41,6 +51,9 @@ function App() {
   const [catalogoCiudades, setCatalogoCiudades] = useState([])
   const [catalogoShows, setCatalogoShows] = useState([])
 
+  //* Filtro catalogo shows
+  const [filtroCatalogoShows, setFiltroCatalogoShows] = useState([])
+
   //* Valores seleccionados
   const [selectedCiudad, setSelectedCiudad] = useState('Monterrey')
 
@@ -53,6 +66,14 @@ function App() {
   //* Funciones
   const pushReservacion = (reservacion) => setListaReservaciones([...listaReservaciones, reservacion])
 
+  const filtrarCatalogoShows = (e) => {
+    const filtro = e.target.value
+    const shows = catalogoShows.filter(x => x?.movie?.title.toLowerCase().includes(filtro))
+    setFiltroCatalogoShows(shows)
+  }
+
+  const filtrarCatalogoShowsDebounced = debounce(filtrarCatalogoShows, 450)
+
   //* Cargar datos iniciales
   useEffect(() => {
     const fetchAPIs = async () => {
@@ -64,6 +85,7 @@ function App() {
 
         const [showsResponse, citiesResponse] = cargarCatalogosResponse
         setCatalogoShows(showsResponse.shows)
+        setFiltroCatalogoShows(showsResponse.shows)
         setCatalogoCiudades(citiesResponse.cities)
       }
       catch (e) {
@@ -82,7 +104,7 @@ function App() {
         <Grid item xs={12}>
           <Paper elevation={3} className="bms_search">
             <img src={logoUrl} className="bms_search__logo" />
-            <TextField label="Busca películas y eventos" className="bms_search__input" />
+            <TextField label="Busca películas y eventos" className="bms_search__input" onKeyUp={filtrarCatalogoShowsDebounced} />
             <FormControl className="bms_search__select">
               <InputLabel id="demo-simple-select-label">Ciudades</InputLabel>
               <Select
@@ -108,7 +130,7 @@ function App() {
         </Grid>
         <Grid item xs={12} className="bms_shows__container">
           {
-            catalogoShows.map((x, indx) => <ShowCard data={x} defaultPosterUrl={logoUrl} pushReservacion={pushReservacion} />)
+            filtroCatalogoShows.map((x, indx) => <ShowCard data={x} defaultPosterUrl={logoUrl} pushReservacion={pushReservacion} />)
           }
         </Grid>
       </Container>

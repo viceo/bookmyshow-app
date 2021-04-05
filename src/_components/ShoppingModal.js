@@ -37,7 +37,6 @@ export default function ShoppingModal(props) {
         const fetchReservaciones = async () => {
             try {
                 const response = await Promise.all(listaReservaciones.map(x => bms_getShowById(x)))
-                console.log('fetchReservaciones', response)
                 setReservaciones(response.map(x => x.show))
             }
             catch (e) {

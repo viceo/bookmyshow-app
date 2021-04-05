@@ -23,8 +23,6 @@ export default function ShowCard(props) {
 
     const { data, defaultPosterUrl, pushReservacion } = props
 
-    console.log('data', data)
-
     const dateFormatUtc = (dateUTC) => moment.utc(dateUTC).format('MM/DD/YYYY') 
 
     return (
